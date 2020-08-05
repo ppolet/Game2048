@@ -102,7 +102,7 @@ public class Model {
     }
     
     public void up(){
-        
+        left();
     }
     
     public void down(){
