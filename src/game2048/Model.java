@@ -19,6 +19,11 @@ public class Model {
         addTile();
     }
     
+    //8.1
+    public Tile[][] getGameTiles(){
+        return gameTiles;
+    }
+    
     protected void resetGameTiles(){
         gameTiles = new Tile[FIELD_WIDTH][FIELD_WIDTH];
         for(int i = 0; i<gameTiles.length; i++)
@@ -101,16 +106,58 @@ public class Model {
         }
     }
     
+    //7
     public void up(){
+        rotateArrayToRight();
+        rotateArrayToRight();
+        rotateArrayToRight();
         left();
+        rotateArrayToRight();
     }
     
     public void down(){
-        
+        rotateArrayToRight();
+        left();
+        rotateArrayToRight();
+        rotateArrayToRight();
+        rotateArrayToRight();
     }
     
     public void right(){
-        
+        rotateArrayToRight();
+        rotateArrayToRight();
+        left();
+        rotateArrayToRight();
+        rotateArrayToRight();
     }
     
+    //поворот 2-х мерного массива по часовой стрелке на 90 градусов
+    private void rotateArrayToRight(){
+        Tile tempCell;
+        int n = gameTiles.length;
+        for(int i=0; i<n/2; i++){
+            for(int j=i; j<n-1-i; j++){
+                tempCell = gameTiles[i][j];
+                gameTiles[i][j] = gameTiles[n-j-1][i];
+                gameTiles[n-j-1][i] = gameTiles[n-i-1][n-j-1];
+                gameTiles[n-i-1][n-j-1] = gameTiles[j][n-i-1];
+                gameTiles[j][n-i-1] = tempCell;
+            }
+        }
+    }
+
+    //8.2
+    public boolean canMove(){
+        //проверяем, если есть пустые клетки, то можно сделать ход
+        if(!getEmptyTiles().isEmpty()) return true;
+        
+        //проверяем смежные клетки, если равны, то можно сделать ход с объединением
+        for(int i = 0; i<gameTiles.length; i++){
+            for(int j = 1; j<gameTiles.length; j++){
+                if(gameTiles[i][j].value == gameTiles[i][j-1].value) return true;
+                if(gameTiles[j][i].value == gameTiles[j-1][i].value) return true;
+            }
+        }
+        return false;
+    }
 }
