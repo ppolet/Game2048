@@ -15,8 +15,6 @@ public class Model {
     
     public Model(){
         resetGameTiles();
-        addTile();
-        addTile();
     }
     
     //8.1
@@ -30,20 +28,26 @@ public class Model {
             for(int j = 0; j<gameTiles.length; j++){
                 gameTiles[i][j] = new Tile();       //3.3
             }
+        score = 0;
+        maxTile = 2;
+        addTile();
+        addTile();
     }
     
     //4 - который будет смотреть какие плитки пустуют и менять вес одной из них, выбранной случайным образом, на 2 или 4 (на 9 двоек должна приходиться 1 четверка)
     private void addTile(){
-        List<Tile> emptyTiles = getEmptyTiles();
+        ArrayList<Tile> emptyTiles = getEmptyTiles();
         if(!emptyTiles.isEmpty() && emptyTiles.size()>0){
             int index = (int)(Math.random() * emptyTiles.size());
+            Tile emptyTile = emptyTiles.get(index);
             int newTileValue = (Math.random() < 0.9) ? 2 : 4;
-            emptyTiles.set(index, new Tile(newTileValue));
+            emptyTile.setValue(newTileValue);
         }
     }
     
-    private List<Tile> getEmptyTiles(){
-        List<Tile> resultList = new ArrayList<>();
+    //4 - возвращающий список свободных плиток в массиве gameTiles
+    private ArrayList<Tile> getEmptyTiles(){
+        ArrayList<Tile> resultList = new ArrayList<>();
         for(int i = 0; i<gameTiles.length; i++)
             for(int j = 0; j<gameTiles.length; j++){
                 if(gameTiles[i][j].isEmpty()) resultList.add(gameTiles[i][j]);
@@ -96,14 +100,16 @@ public class Model {
     
     //6.3
     public void left(){
+        boolean isChange = false;
         for(int i=0; i<gameTiles.length; i++){
             if (compressTiles(gameTiles[i])){
-                addTile();          //добавляем плитку, т.к. было сжатие
+                isChange = true;          //было изменение
             }
             if (mergeTiles(gameTiles[i])){
-                addTile();          //добавляем плитку, т.к. было слияние
+                isChange = true;          //было изменение
             }
         }
+        if(isChange) addTile(); //добавляем плитку
     }
     
     //7

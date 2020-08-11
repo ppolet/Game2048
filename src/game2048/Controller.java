@@ -27,6 +27,11 @@ public class Controller extends KeyAdapter{
         return model.score;
     }
     
+    //10
+    public View getView(){
+        return view;
+    }
+    
     //9 - который позволит вернуть игровое поле в начальное состояние
     // Необходимо обнулить счет, установить флаги isGameWon и isGameLost у представления в false и вызывать метод resetGameTiles у модели.
     public void resetGame(){
