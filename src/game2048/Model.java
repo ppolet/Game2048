@@ -6,12 +6,16 @@ package game2048;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 public class Model {
     private final int FIELD_WIDTH = 4;   //3 - определяющая ширину игрового поля
     private Tile[][] gameTiles;   //3.2
     int score;      // 5 - текущий счет 
     int maxTile;    // 5 - максимальный вес плитки на игровом поле
+    Stack<Tile[][]> previousStates;  //11 - предыдущие состояния игрового поля
+    Stack<Integer> previousScores;  //11 - предыдущие счета
+    boolean isSaveNeeded = true;
     
     public Model(){
         resetGameTiles();
@@ -30,6 +34,8 @@ public class Model {
             }
         score = 0;
         maxTile = 2;
+        previousStates = new Stack<>();
+        previousScores = new Stack<>();
         addTile();
         addTile();
     }
@@ -98,7 +104,7 @@ public class Model {
         return merge;
     }
     
-    ///////////////////////////////
+    /////////////////////////////// для отладки ////////////////////////////////
     public void printGameTilesArray(){
         for(int i = 0; i<gameTiles.length; i++){
             for(int j = 0; j<gameTiles.length; j++){
@@ -111,27 +117,29 @@ public class Model {
     
     //6.3
     public void left(){
+        //12.2
+        if(isSaveNeeded){
+            saveState(gameTiles); //12.1 - сохраняем состояние для отмены
+        }
+        
         boolean isChange = false;
-        
-        printGameTilesArray();
-        
         for(int i=0; i<gameTiles.length; i++){
             if (compressTiles(gameTiles[i])){
                 isChange = true;          //было изменение
             }
-    
-            System.out.println("--- after compress ---");
-            printGameTilesArray();
-            
             if (mergeTiles(gameTiles[i])){
                 isChange = true;          //было изменение
             }
         }
-        if(isChange) addTile(); //добавляем плитку
+        if(isChange){
+            addTile();      //добавляем плитку
+            isSaveNeeded = true;
+        } 
     }
     
     //7
     public void up(){
+        saveState(gameTiles);   //12.1 - сохраняем состояние для отмены
         rotateArrayToRight();
         rotateArrayToRight();
         rotateArrayToRight();
@@ -140,6 +148,7 @@ public class Model {
     }
     
     public void down(){
+        saveState(gameTiles);   //12.1 - сохраняем состояние для отмены
         rotateArrayToRight();
         left();
         rotateArrayToRight();
@@ -148,6 +157,7 @@ public class Model {
     }
     
     public void right(){
+        saveState(gameTiles);   //12.1 - сохраняем состояние для отмены
         rotateArrayToRight();
         rotateArrayToRight();
         left();
@@ -183,5 +193,57 @@ public class Model {
             }
         }
         return false;
+    }
+    
+    //11 - будет сохранять текущее игровое состояние и счет в стеки
+    private void saveState(Tile[][] tiles){
+        Tile[][] gameTilesForStack = new Tile[tiles.length][tiles[0].length];
+        for(int i = 0; i<gameTilesForStack.length; i++){
+            for(int j = 0; j<gameTilesForStack[0].length; j++){
+                gameTilesForStack[i][j] = new Tile(tiles[i][j].getValue());
+            }
+        }
+        previousStates.push(gameTilesForStack);
+        previousScores.push(score);
+        isSaveNeeded = false;
+    }
+    
+    //11 - будет устанавливать текущее игровое состояние равным последнему находящемуся в стеках с помощью метода pop
+    public void rollback(){
+        if(!previousStates.isEmpty() && !previousScores.isEmpty()){
+            gameTiles = previousStates.pop();
+            score = previousScores.pop();
+        }
+    }
+    
+    //13 - который будет вызывать один из методов движения случайным образом
+    public void randomMove(){
+        int n = ((int) (Math.random() * 100)) % 4;
+        switch(n){
+            case 0:
+                left();
+                break;
+            case 1:
+                right();
+                break;
+            case 2:
+                up();
+                break;
+            case 3:
+                down();
+                break;
+        }
+    }
+    
+    //15.1 - будет возвращать true, в случае, если вес плиток в массиве gameTiles отличается от веса плиток в верхнем массиве стека previousStates.
+    public boolean hasBoardChanged(){
+        return (score != previousScores.peek());
+    }
+    
+    //15.2 - возвращает объект типа MoveEfficiency описывающий эффективность переданного хода
+    public MoveEfficiency getMoveEfficiency(Move move){
+        
+        rollback();
+        return null;
     }
 }

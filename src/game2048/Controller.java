@@ -74,6 +74,12 @@ public class Controller extends KeyAdapter{
                 case (KeyEvent.VK_DOWN):
                     model.down();
                     break;
+                case (KeyEvent.VK_Z):
+                    model.rollback();   //12 - отмена хода 
+                    break;
+                case (KeyEvent.VK_R):
+                    model.randomMove();   //13 - случайный ход 
+                    break;
             }
         }
         
