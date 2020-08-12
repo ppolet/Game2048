@@ -59,20 +59,19 @@ public class Model {
     // движение влево
     private boolean compressTiles(Tile[] tiles){
         boolean compress = false;
-        Tile[] tempTiles = new Tile[tiles.length];
-        int n1 = 0;
-        int n2 = tiles.length-1;
+        int n = 0;
         for(int i=0; i<tiles.length; i++){
+            if(!tiles[n].isEmpty()){
+                n++;
+                continue;
+            }
             if(!tiles[i].isEmpty()){
-                if(n1 != i) compress = true;        //было сжатие
-                tempTiles[n1] = tiles[i];   //добавляем в массив в начало (не 0)
-                n1++;
-            } else {
-                tempTiles[n2] = tiles[i];   //добавляем в массив в конец (0)
-                n2--;
+                tiles[n] = tiles[i];
+                tiles[i] = new Tile();
+                n++;
+                compress = true;
             }
         }
-        tiles = tempTiles;
         return compress;
     }
     
@@ -82,6 +81,7 @@ public class Model {
     private boolean mergeTiles(Tile[] tiles){
         boolean merge = false;
         for(int i=1; i<tiles.length; i++){
+            if (tiles[i-1].getValue() == 0) continue;
             if (tiles[i-1].getValue() == tiles[i].getValue()){
                 int tempValueTile = tiles[i-1].getValue();
                 tiles[i-1].setValue(tempValueTile * 2);
@@ -98,13 +98,31 @@ public class Model {
         return merge;
     }
     
+    ///////////////////////////////
+    public void printGameTilesArray(){
+        for(int i = 0; i<gameTiles.length; i++){
+            for(int j = 0; j<gameTiles.length; j++){
+                System.out.print(gameTiles[i][j].getValue());
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+    
     //6.3
     public void left(){
         boolean isChange = false;
+        
+        printGameTilesArray();
+        
         for(int i=0; i<gameTiles.length; i++){
             if (compressTiles(gameTiles[i])){
                 isChange = true;          //было изменение
             }
+    
+            System.out.println("--- after compress ---");
+            printGameTilesArray();
+            
             if (mergeTiles(gameTiles[i])){
                 isChange = true;          //было изменение
             }
