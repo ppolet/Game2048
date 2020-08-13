@@ -14,7 +14,7 @@ public class Main {
         JFrame game = new JFrame();
         game.setTitle("2048");
         game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        game.setSize(460, 530);
+        game.setSize(460, 550);
         game.setResizable(false);
 
         game.add(controller.getView());

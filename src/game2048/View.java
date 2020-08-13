@@ -37,6 +37,12 @@ public class View extends JPanel {
 
         g.drawString("Score: " + controller.getScore(), 140, 465);
 
+        //---Info line
+        int helpFontSize = 12;
+        Font helpFont = new Font(FONT_NAME, Font.BOLD, helpFontSize);
+        g.setFont(helpFont);
+        g.drawString("KEYS: Esc - new game; Z - undo move; R - random move; A - smart move", 16, 495);
+
         if (isGameWon) {
             JOptionPane.showMessageDialog(this, "You've won!");
         } else if(isGameLost) {
