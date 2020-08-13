@@ -5,7 +5,9 @@ package game2048;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Stack;
 
 public class Model {
@@ -242,8 +244,25 @@ public class Model {
     
     //15.2 - возвращает объект типа MoveEfficiency описывающий эффективность переданного хода
     public MoveEfficiency getMoveEfficiency(Move move){
-        
+        MoveEfficiency moveEfficiency;
+        move.move();
+        if(hasBoardChanged()){
+            moveEfficiency = new MoveEfficiency(getEmptyTiles().size(), score, move);
+        } else {
+            moveEfficiency = new MoveEfficiency(-1, 0, move);
+        }
         rollback();
-        return null;
+        return moveEfficiency;
+    }
+    
+    //16
+    public void autoMove(){
+        PriorityQueue<MoveEfficiency> priorityMove = new PriorityQueue<>(4, Collections.reverseOrder());   //16.1 - для того, чтобы вверху очереди всегда был максимальный элемент
+        priorityMove.add(getMoveEfficiency(this::left));
+        priorityMove.add(getMoveEfficiency(this::right));
+        priorityMove.add(getMoveEfficiency(this::up));
+        priorityMove.add(getMoveEfficiency(this::down));
+        Move move = priorityMove.peek().getMove();
+        move.move();
     }
 }

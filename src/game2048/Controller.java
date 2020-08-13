@@ -80,6 +80,9 @@ public class Controller extends KeyAdapter{
                 case (KeyEvent.VK_R):
                     model.randomMove();   //13 - случайный ход 
                     break;
+                case (KeyEvent.VK_A):
+                    model.autoMove();   //16 - эффективный ход 
+                    break;
             }
         }
         
